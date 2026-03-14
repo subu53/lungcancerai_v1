@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+python-multipart
+streamlit
+torch
+torchvision
+pillow
+numpy
+matplotlib
+requests
+opencv-python-headless
