@@ -2,10 +2,9 @@ from fastapi import FastAPI, File, UploadFile
 from fastapi.responses import JSONResponse
 from PIL import Image
 import io
-import torch
 
-from model import load_model, predict_image
-from explain import generate_gradcam_base64
+from app.model import load_model, predict_image
+from app.explain import generate_gradcam_base64
 
 app = FastAPI(title="Lung AI V1")
 
@@ -17,15 +16,26 @@ def root():
 
 @app.post("/predict")
 async def predict(file: UploadFile = File(...)):
-    contents = await file.read()
-    image = Image.open(io.BytesIO(contents)).convert("RGB")
+    try:
+        contents = await file.read()
+        image = Image.open(io.BytesIO(contents)).convert("RGB")
 
-    pred_class, confidence, image_tensor = predict_image(image, model, class_names, device)
-    heatmap_b64 = generate_gradcam_base64(model, image_tensor, pred_class)
+        pred_class, pred_idx, confidence, image_tensor = predict_image(
+            image, model, class_names, device
+        )
 
-    return JSONResponse({
-        "predicted_class": pred_class,
-        "confidence": float(confidence),
-        "heatmap_base64": heatmap_b64,
-        "warning": "Research prototype only. Not for clinical diagnosis."
-    })
+        heatmap_b64 = generate_gradcam_base64(model, image_tensor, pred_idx)
+
+        return JSONResponse({
+            "predicted_class": pred_class,
+            "predicted_index": int(pred_idx),
+            "confidence": float(confidence),
+            "heatmap_base64": heatmap_b64,
+            "warning": "Research prototype only. Not for clinical diagnosis."
+        })
+
+    except Exception as e:
+        return JSONResponse(
+            status_code=500,
+            content={"error": str(e)}
+        )
