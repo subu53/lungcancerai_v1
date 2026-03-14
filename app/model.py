@@ -22,14 +22,11 @@ def load_model():
     in_features = model.classifier[1].in_features
     model.classifier[1] = nn.Linear(in_features, 3)
 
-    model_path = MODEL_DIR / "efficientnet_lung_v1.pth"
-    class_path = MODEL_DIR / "class_names.json"
-
-    model.load_state_dict(torch.load(model_path, map_location=device))
+    model.load_state_dict(torch.load(MODEL_DIR / "efficientnet_lung_v1.pth", map_location=device))
     model.to(device)
     model.eval()
 
-    with open(class_path, "r") as f:
+    with open(MODEL_DIR / "class_names.json", "r") as f:
         class_names = json.load(f)
 
     return model, class_names, device
@@ -45,5 +42,4 @@ def predict_image(image, model, class_names, device):
         confidence = probs[0, pred_idx].item()
 
     pred_class = class_names[pred_idx]
-
     return pred_class, pred_idx, confidence, image_tensor
