@@ -3,8 +3,8 @@ from fastapi.responses import JSONResponse
 from PIL import Image
 import io
 
-from app.model import load_model, predict_image
-from app.explain import generate_gradcam_base64
+from model import load_model, predict_image
+from explain import generate_gradcam_base64
 
 app = FastAPI(title="Lung AI V1")
 
