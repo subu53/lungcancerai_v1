@@ -3,8 +3,8 @@ from PIL import Image
 import io
 import base64
 
-from app.model import load_model, predict_image
-from app.explain import generate_gradcam_base64
+from model import load_model, predict_image
+from explain import generate_gradcam_base64
 
 st.set_page_config(page_title="Lung AI V1", layout="wide")
 st.title("Lung AI V1")
